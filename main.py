@@ -1,11 +1,30 @@
 from fastapi import FastAPI, HTTPException
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import ast
+import numpy
+
 app = FastAPI()
 
 data = pd.read_csv('datasets/movies_transformed.csv', index_col=0, parse_dates=["release_date"])
+df = pd.read_csv("datasets/df.csv", index_col=0)
 
 meses = {"enero":1,"febrero":2,"marzo":3,"abril":4,"mayo":5,"junio":6,"julio":7,"agosto":8,"septiembre":9,"octubre":10,"noviembre":11,"diciembre":12}
 semana = {"lunes":0,"martes":1,"miercoles":2,"jueves":3,"viernes":4,"sabado":5,"domingo":6,}
+
+
+
+tfidf_vectorizer = TfidfVectorizer()
+tfidf_matrix = tfidf_vectorizer.fit_transform(df['genres'])
+
+cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+
+
+@app.get("/recomendar/{pelicula}")
+async def recomendar(pelicula: str):
+    pass
+
 
 @app.get("/peliculas_en_mes/{mes}")
 async def cantidad_filmaciones_mes(mes: str):
